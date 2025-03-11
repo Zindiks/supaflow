@@ -7,6 +7,7 @@ import DashboardPage from "./pages/dashboard";
 import ProtectedRoute from "./components/auth/protected-route";
 import PublicRoute from "./components/auth/public-route";
 import DashboardLayout from "./layout/dashboard-layout";
+import Spinner from "./components/spinner";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/spinner" element={<Spinner />} />
       </Route>
     </Routes>
   );

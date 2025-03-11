@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router";
 import { useAuthContext } from "../../hooks/useAuthContext";
+import Spinner from "../spinner";
 
 export interface IPublicRouteProps {
   children: React.ReactNode;
@@ -15,11 +16,7 @@ const PublicRoute: React.FunctionComponent<IPublicRouteProps> = ({
   const from = location.state?.from || "/";
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p>Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (user) {
