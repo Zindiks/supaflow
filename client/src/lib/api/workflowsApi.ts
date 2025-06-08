@@ -1,6 +1,6 @@
 // This file provides API functions to work with workflows
 import { Workflow } from "@prisma/client";
-import supabase from "../supabaseClient";
+import { prisma } from "../db";
 
 // Types
 export interface CreateWorkflowInput {
@@ -16,16 +16,16 @@ export const workflowsApi = {
   // Fetch all workflows for a user
   async getWorkflows(userId: string): Promise<Workflow[]> {
     try {
-      // In a real implementation, you would fetch from your backend API
-      // For now, we're using a direct call to Supabase
-      const { data, error } = await supabase
-        .from("workflows")
-        .select("*")
-        .eq("userId", userId)
-        .order("createdAt", { ascending: false });
+      const workflows = await prisma.workflow.findMany({
+        where: {
+          userId: userId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
-      if (error) throw error;
-      return data as Workflow[];
+      return workflows;
     } catch (error) {
       console.error("Error fetching workflows:", error);
       throw error;
@@ -35,24 +35,17 @@ export const workflowsApi = {
   // Create a new workflow
   async createWorkflow(workflow: CreateWorkflowInput): Promise<Workflow> {
     try {
-      // In a real implementation, you would post to your backend API
-      // For now, we're using a direct call to Supabase
-      const { data, error } = await supabase
-        .from("workflows")
-        .insert([
-          {
-            name: workflow.name,
-            description: workflow.description || "",
-            userId: workflow.userId,
-            status: workflow.status,
-            definition: workflow.definition,
-          },
-        ])
-        .select()
-        .single();
+      const newWorkflow = await prisma.workflow.create({
+        data: {
+          name: workflow.name,
+          description: workflow.description || "",
+          userId: workflow.userId,
+          status: workflow.status,
+          definition: workflow.definition,
+        },
+      });
 
-      if (error) throw error;
-      return data as Workflow;
+      return newWorkflow;
     } catch (error) {
       console.error("Error creating workflow:", error);
       throw error;
@@ -62,18 +55,13 @@ export const workflowsApi = {
   // Get a workflow by ID
   async getWorkflow(id: string): Promise<Workflow | null> {
     try {
-      const { data, error } = await supabase
-        .from("workflows")
-        .select("*")
-        .eq("id", id)
-        .single();
+      const workflow = await prisma.workflow.findUnique({
+        where: {
+          id: id,
+        },
+      });
 
-      if (error) {
-        if (error.code === "PGRST116") return null; // Record not found
-        throw error;
-      }
-
-      return data as Workflow;
+      return workflow;
     } catch (error) {
       console.error("Error fetching workflow:", error);
       throw error;
