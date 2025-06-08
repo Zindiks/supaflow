@@ -26,3 +26,5 @@ dist-ssr
 .env
 
 apphosting.local.yaml
+
+/generated/prisma
