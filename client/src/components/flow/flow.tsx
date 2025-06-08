@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -101,22 +101,20 @@ export default function Flow() {
   }, [setNodes]);
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={(changes) => {
-          onNodesChange(changes);
-          updateOutputNode();
-        }}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-      >
-        <Controls />
-        <MiniMap />
-        <Background variant="dots" gap={12} size={1} />
-      </ReactFlow>
-    </div>
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={(changes) => {
+        onNodesChange(changes);
+        updateOutputNode();
+      }}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      nodeTypes={nodeTypes}
+    >
+      <Controls />
+      <MiniMap />
+      <Background variant="dots" gap={12} size={1} />
+    </ReactFlow>
   );
 }
