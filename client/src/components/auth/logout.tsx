@@ -5,8 +5,8 @@ export default function LogoutButton() {
   const { signOut, isSigningOut } = useAuth();
 
   const handleLogout = () => {
+    // Don't log immediately - wait until the operation completes
     signOut();
-    console.log("Logging out user");
   };
 
   return (

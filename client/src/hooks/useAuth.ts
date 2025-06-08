@@ -41,6 +41,10 @@ export const useAuth = () => {
     onSuccess: () => {
       // Invalidate auth queries on signout
       queryClient.invalidateQueries({ queryKey: authKeys.all });
+      console.log("User logged out successfully");
+    },
+    onError: (error) => {
+      console.error("Logout error:", error);
     },
   });
 

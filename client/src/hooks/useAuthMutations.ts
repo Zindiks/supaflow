@@ -22,6 +22,13 @@ export const useSignIn = () => {
         });
       }
     },
+    onError: (error) => {
+      // Consistently handle and log sign-in errors
+      console.error("Authentication error:", error);
+
+      // You could also integrate with an error tracking service here
+      // or dispatch to a global error handler
+    },
   });
 };
 
@@ -41,6 +48,14 @@ export const useSignUp = () => {
         options: { data: metadata },
       });
     },
+    onError: (error) => {
+      console.error("Sign-up error:", error);
+    },
+    onSuccess: (data) => {
+      if (data.error) {
+        console.error("Sign-up API error:", data.error);
+      }
+    },
   });
 };
 
@@ -49,7 +64,25 @@ export const useSignInWithProvider = () => {
     mutationFn: async (provider: "google" | "github" | "facebook") => {
       // Check if there's a stored redirectTo path
       const storedRedirectTo = window.sessionStorage.getItem("redirectTo");
-      const redirectPath = storedRedirectTo || "/";
+
+      // Validate the redirect path to prevent open redirect vulnerabilities
+      // Only allow internal paths (starting with /) and validate against a whitelist of allowed paths
+      const allowedPaths = ["/", "/dashboard", "/auth/callback", "/profile"];
+      let redirectPath = "/"; // Default path
+
+      if (
+        storedRedirectTo &&
+        storedRedirectTo.startsWith("/") &&
+        allowedPaths.some(
+          (path) =>
+            storedRedirectTo === path || storedRedirectTo.startsWith(`${path}/`)
+        )
+      ) {
+        redirectPath = storedRedirectTo;
+      }
+
+      // Clean up the stored redirect path
+      window.sessionStorage.removeItem("redirectTo");
 
       return supabase.auth.signInWithOAuth({
         provider,
@@ -57,6 +90,14 @@ export const useSignInWithProvider = () => {
           redirectTo: `${window.location.origin}${redirectPath}`,
         },
       });
+    },
+    onError: (error) => {
+      console.error("OAuth sign-in error:", error);
+    },
+    onSuccess: (data) => {
+      if (data.error) {
+        console.error("OAuth sign-in API error:", data.error);
+      }
     },
   });
 };
@@ -67,6 +108,14 @@ export const useResetPassword = () => {
       return supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       });
+    },
+    onError: (error) => {
+      console.error("Password reset error:", error);
+    },
+    onSuccess: (data) => {
+      if (data.error) {
+        console.error("Password reset API error:", data.error);
+      }
     },
   });
 };
