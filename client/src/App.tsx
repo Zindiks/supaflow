@@ -4,6 +4,7 @@ import NotFoundPage from "./pages/not-found";
 import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
 import DashboardPage from "./pages/dashboard";
+import WorkflowsPage from "./pages/workflows";
 import ProtectedRoute from "./components/auth/protected-route";
 import PublicRoute from "./components/auth/public-route";
 import DashboardLayout from "./layout/dashboard-layout";
@@ -34,6 +35,7 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/workflows" element={<WorkflowsPage />} />
         <Route path="/spinner" element={<Spinner />} />
       </Route>
     </Routes>

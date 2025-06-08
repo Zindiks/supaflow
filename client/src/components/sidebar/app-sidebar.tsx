@@ -69,6 +69,13 @@ const data = {
       ],
     },
     {
+      title: "Workflows",
+      url: "/workflows",
+      icon: Map,
+      isActive: false, // This will be handled by NavMain component and current route
+      items: [],
+    },
+    {
       title: "Models",
       url: "#",
       icon: Bot,
