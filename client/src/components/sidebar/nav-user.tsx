@@ -24,10 +24,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import { useAuthContext } from "@/hooks/useAuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export function NavUser() {
-  const { user, signOut } = useAuthContext();
+  const { user, signOut } = useAuth();
 
   const { isMobile } = useSidebar();
 

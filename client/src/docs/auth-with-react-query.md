@@ -1,18 +1,19 @@
 # Authentication with React Query
 
-This project has transitioned from a Context-based authentication system to a React Query-based system while maintaining backward compatibility.
+This project has transitioned from a Context-based authentication system to a pure React Query-based system for managing authentication.
 
 ## Components
 
-### Existing Context API (Backward Compatible)
-
-- `AuthContext.tsx`: Now uses React Query under the hood
-- `useAuthContext.ts`: Original hook that uses the context (maintained for backward compatibility)
-
-### New React Query API
+### React Query Authentication API
 
 - `useAuth.ts`: Main hook for authentication state with React Query
 - `useAuthMutations.ts`: Collection of mutation hooks for authentication operations
+
+## Benefits of the React Query Approach
+
+- **Simpler Architecture**: No Context API needed, just import the hooks directly
+- **Better Performance**: More efficient re-renders and caching
+- **TypeScript Integration**: Full type safety for auth state and operations
 
 ## Using the New API
 

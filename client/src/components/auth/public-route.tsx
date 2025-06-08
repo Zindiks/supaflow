@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router";
-import { useAuthContext } from "../../hooks/useAuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import Spinner from "../spinner";
 
 export interface IPublicRouteProps {
@@ -9,7 +9,7 @@ export interface IPublicRouteProps {
 const PublicRoute: React.FunctionComponent<IPublicRouteProps> = ({
   children,
 }) => {
-  const { user, loading } = useAuthContext();
+  const { user, loading } = useAuth();
   const location = useLocation();
 
   // Get the redirectTo path from location state, or use '/' as default

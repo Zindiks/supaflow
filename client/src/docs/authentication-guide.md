@@ -1,22 +1,20 @@
-# Authentication with React Query and Context API
+# Authentication with React Query
 
-This project uses React Query for authentication while maintaining backward compatibility with the Context API. This document explains how to use both approaches and how to migrate from Context API to React Query.
+This project uses React Query for authentication, providing a clean and efficient way to manage authentication state and operations.
 
 ## Current Architecture
 
-- **AuthContext + React Query**: The `AuthContext` now uses React Query under the hood
-- **Backward Compatibility**: All existing components using the Context API will continue to work
-- **New Components**: New components should use the React Query hooks directly
+- **React Query**: All authentication state and operations are managed by React Query
+- **No Context API**: We've removed the Context API dependency for a simpler architecture
+- **Simple Imports**: Just import the hooks you need and use them directly
 
 ## Authentication Hooks
 
-### Context API (Legacy)
-
 ```tsx
-import { useAuthContext } from "@/hooks/useAuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 function MyComponent() {
-  const { user, session, loading, signOut } = useAuthContext();
+  const { user, session, loading, signOut } = useAuth();
 
   // Use the auth state and actions
 }
