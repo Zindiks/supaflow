@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import GoogleButton from "./google-button";
-import supabase from "@/lib/supabaseClient";
+import { useSignIn } from "@/hooks/useAuthMutations";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -27,13 +27,14 @@ const loginSchema = z.object({
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   // Get the redirectTo path from location state, or use '/' as default
   const from = location.state?.from || "/";
+
+  // Use the React Query mutation hook for sign in
+  const signIn = useSignIn();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -45,27 +46,18 @@ export default function Login() {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     const { email, password } = values;
-    setError(null);
-    setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const result = await signIn.mutateAsync({ email, password });
 
-      if (error) {
-        setError(error.message);
-        console.error("Login error:", error);
-      } else {
-        console.log("User logged in:", data.user);
+      if (result.error) {
+        console.error("Login error:", result.error);
+      } else if (result.data.session) {
+        console.log("User logged in:", result.data.user);
         navigate(from, { replace: true });
       }
     } catch (err) {
       console.error("Unexpected login error:", err);
-      setError("An unexpected error occurred");
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -88,9 +80,11 @@ export default function Login() {
         </span>
       </div>
 
-      {error && (
+      {signIn.error && (
         <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
-          {error}
+          {signIn.error instanceof Error
+            ? signIn.error.message
+            : "An error occurred during sign in"}
         </div>
       )}
 
@@ -146,8 +140,11 @@ export default function Login() {
             )}
           />
 
-          <Button className="w-full text-background" disabled={isSubmitting}>
-            {isSubmitting ? "Logging in..." : "Login"}
+          <Button
+            className="w-full text-background"
+            disabled={signIn.isPending}
+          >
+            {signIn.isPending ? "Logging in..." : "Login"}
           </Button>
         </form>
       </Form>

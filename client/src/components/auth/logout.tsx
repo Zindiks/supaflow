@@ -1,17 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { useAuthContext } from "@/hooks/useAuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LogoutButton() {
-  const { signOut } = useAuthContext();
+  const { signOut, isSigningOut } = useAuth();
 
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      console.log("User logged out");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+  const handleLogout = () => {
+    signOut();
+    console.log("Logging out user");
   };
 
-  return <Button onClick={handleLogout}>Logout</Button>;
+  return (
+    <Button onClick={handleLogout} disabled={isSigningOut}>
+      {isSigningOut ? "Logging out..." : "Logout"}
+    </Button>
+  );
 }

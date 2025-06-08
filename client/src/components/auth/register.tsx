@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import supabase from "@/lib/supabaseClient";
+import { useSignUp } from "@/hooks/useAuthMutations";
 
 const registerSchema = z
   .object({
@@ -36,6 +36,8 @@ const registerSchema = z
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
+  const navigate = useNavigate();
+  const signUp = useSignUp();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -48,16 +50,28 @@ export default function Register() {
   });
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    const { email, password } = values;
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { email, password, username } = values;
 
-    if (error) {
-      console.error("Registration error:", error);
-    } else {
-      console.log("User registered:", data.user);
+    try {
+      const result = await signUp.mutateAsync({
+        email,
+        password,
+        metadata: {
+          username,
+        },
+      });
+
+      if (result.error) {
+        console.error("Registration error:", result.error);
+      } else {
+        console.log("User registered:", result.data.user);
+        // Redirect to login page or show confirmation message
+        navigate("/auth/login", {
+          state: { registrationSuccess: true },
+        });
+      }
+    } catch (err) {
+      console.error("Unexpected registration error:", err);
     }
   }
 
@@ -165,11 +179,18 @@ export default function Register() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
-            Register
+          <Button type="submit" className="w-full" disabled={signUp.isPending}>
+            {signUp.isPending ? "Registering..." : "Register"}
           </Button>
         </form>
       </Form>
+      {signUp.error && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+          {signUp.error instanceof Error
+            ? signUp.error.message
+            : "An error occurred during registration"}
+        </div>
+      )}
       <div className="mt-4 text-center text-sm">
         Already have an account? <Link to="/auth/login">Login</Link>
       </div>
