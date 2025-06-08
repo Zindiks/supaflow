@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router";
-import { useAuthContext } from "../../hooks/useAuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import Spinner from "../spinner";
 
 export interface IProtectedRouteProps {
@@ -9,7 +9,7 @@ export interface IProtectedRouteProps {
 const ProtectedRoute: React.FunctionComponent<IProtectedRouteProps> = ({
   children,
 }) => {
-  const { user, loading } = useAuthContext();
+  const { user, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
